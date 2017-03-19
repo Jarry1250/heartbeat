@@ -191,8 +191,6 @@ switch( $_GET['action'] ){
 		// Fill array with beautiful data
 		$res['dashboard'] = [];
 		while( $datapoint = $selectRes->fetchArray( SQLITE3_ASSOC ) ){
-			if( $datapoint['working_pattern'] === 'test' ) continue;
-
 			$start = ( $datapoint['adj_start'] > 0 ) ? $datapoint['adj_start'] : $datapoint['start'];
 			$end = ( $datapoint['adj_end'] > 0 ) ? $datapoint['adj_end'] : $datapoint['end'];
 			$adjusted = ( $start === $datapoint['adj_start'] || $end === $datapoint['adj_end'] || $datapoint['adj_gaps'] > 0 );
