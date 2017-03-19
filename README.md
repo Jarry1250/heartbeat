@@ -47,7 +47,7 @@ In index.html (or similar), add the dependencies listed above. Then, in a new co
 #### Example (single user)
 ```javascript
 $(function() {
-	var id = 'self', init = function(){
+	var id = 1, init = function(){
 			$.heartbeat( { 'id': id }, function( data ) {
 				// Success
 				$( '#status' ).text( 'active' );
