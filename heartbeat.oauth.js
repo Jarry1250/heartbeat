@@ -47,7 +47,7 @@
 
 	/**
 	 * Verify the supplied credentials
-	 * @param {string} regex The regular express the user's email must match.
+	 * @param {RegExp} regex The regular express the user's email must match.
 	 * @param {function} success
 	 */
 	$.verify = function ( regex, success ) {

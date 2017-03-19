@@ -14,7 +14,6 @@
 	 * @returns {number} Seconds since 1 January 1970
 	 */
 	$.toEpochSeconds = function ( date ) {
-		date = date.toString();
 		return Date.parse(
 			date.substr( 0, 4 ) + '/' + date.substr( 4, 2 ) + '/' + date.substr( 6, 2 ) + date.substr( 8 )
 		) / 1000;
@@ -32,7 +31,7 @@
 
 	/**
 	 * Takes a date object an return a string formatted as (e.g.) 'Mon 1 Jan'
-	 * @param {Date} date
+	 * @param {string} date
 	 * @returns {string}
 	 */
 	$.dateToName = function ( date ) {
@@ -106,7 +105,7 @@
 	 * Returns a Date which represents the Monday immediately preceding the Date supplied. If the Date supplied *is*
 	 * a Monday, there is no change.
 	 *
-	 * @param date
+	 * @param {Date} date
 	 * @returns {Date}
 	 */
 	$.getPreviousMonday = function ( date ) {
@@ -119,7 +118,7 @@
 	/**
 	 * Returns a Date which represents the Monday immediately preceding the Date supplied. If the Date supplied *is*
 	 * a Monday, there is no change.
-	 * @param date
+	 * @param {Date} date
 	 * @returns {Date}
 	 */
 	$.getNextSunday = function ( date ) {
