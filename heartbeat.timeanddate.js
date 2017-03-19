@@ -34,7 +34,7 @@
 	 * @param {string} date
 	 * @returns {string}
 	 */
-	$.dateToName = function ( date ) {
+	$.toPrettyName = function ( date ) {
 		var options = { weekday: "short", day: "numeric", month: "short" };
 		return $.toDate( date ).toLocaleDateString( 'en-GB', options );
 	};

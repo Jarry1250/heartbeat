@@ -154,7 +154,7 @@
 
 		// Set up all the variables we're going to need.
 		var i, j, subtotal = 0, rowKeys = getRowKeys(),
-			rowNames    = rowKeys.map( $.dateToName ),
+			rowNames    = rowKeys.map( $.toPrettyName ),
 			columnNames = {
 				'start': 'Logged in',
 				'end': 'Logged off',
