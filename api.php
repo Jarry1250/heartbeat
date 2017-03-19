@@ -177,10 +177,8 @@ switch( $_GET['action'] ){
 			break;
 		}
 
-		// Heartbeat failed, probably because another window is open (violating the recency constaint)
 		$error = $db->lastErrorMsg();
-		$error = ( $error == 'not an error' ) ? 'uniqueness constraint violated' : $error;
-		$res['error'] = 'insert instruction failed (' . $error . ')';
+		$res['error'] = 'instruction failed (' . $error . ')';
 
 		break;
 
