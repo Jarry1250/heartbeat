@@ -51,9 +51,10 @@ switch( $_GET['action'] ){
 			$res['error'] = "'month' must fit the format YYYYmm";
 			break;
 		}
-		$selectStatement = $db->prepare( 'SELECT * FROM hours WHERE id = :id AND date LIKE :month;' );
+		$selectStatement = $db->prepare( 'SELECT * FROM hours WHERE id = :id AND ( date LIKE :month OR date LIKE :weekBuffer )' );
 		$selectStatement->bindValue( ':id', $params['id'], SQLITE3_TEXT );
-		$selectStatement->bindValue( ':month', $params['month'] .= '%', SQLITE3_TEXT );
+		$selectStatement->bindValue( ':month', $params['month'] . '__', SQLITE3_TEXT );
+		$selectStatement->bindValue( ':weekBuffer', date( 'Ym2', strtotime( $params['month'] . '01 - 7 days' ) ) . '_', SQLITE3_TEXT );
 		$selectRes = $selectStatement->execute();
 		$res['query'] = [];
 		while( $day = $selectRes->fetchArray( SQLITE3_ASSOC ) ){
@@ -62,6 +63,7 @@ switch( $_GET['action'] ){
 			$res['query'][$date] = $day;
 		}
 		ksort( $res['query'] );
+		$res['test'] = date( 'Ym2', strtotime( $params['month'] . '01 - 7 days' ) ) . '%';
 		break;
 	case 'heartbeat':
 		$req = requires( 'id' );
