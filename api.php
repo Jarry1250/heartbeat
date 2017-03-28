@@ -184,7 +184,7 @@ switch( $_GET['action'] ){
 		break;
 
 	case 'dashboard':
-		$selectStatement = $db->prepare( "SELECT * from hours LEFT JOIN users ON hours.id = users.id;" );
+		$selectStatement = $db->prepare( "SELECT * from hours;" );
 		$selectRes = $selectStatement->execute();
 
 		// Fill array with beautiful data
@@ -194,7 +194,8 @@ switch( $_GET['action'] ){
 			$end = ( $datapoint['adj_end'] > 0 ) ? $datapoint['adj_end'] : $datapoint['end'];
 			$adjusted = ( $start === $datapoint['adj_start'] || $end === $datapoint['adj_end'] || $datapoint['adj_gaps'] > 0 );
 			if( !isset( $res['dashboard'][$datapoint['id']] ) ) $res['dashboard'][$datapoint['id']] = [];
-			$res['dashboard'][$datapoint['id']][$datapoint['date']] = array( $end - $start - $datapoint['adj_gaps'], $adjusted );
+			if( !isset( $res['dashboard'][$datapoint['id']]['data'] ) ) $res['dashboard'][$datapoint['id']]['data'] = [];
+			$res['dashboard'][$datapoint['id']]['data'][$datapoint['date']] = array( $end - $start - $datapoint['adj_gaps'], $adjusted );
 		}
 		// Strip ids out to preserve anonymity and reduce bytecount
 		$res['dashboard'] = array_values( $res['dashboard'] );
