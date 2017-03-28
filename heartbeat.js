@@ -14,7 +14,7 @@
 		}
 	},
 	api = function( params, success, failure ) {
-		$.getJSON( 'api.php?' + $.param( params ), function ( data ) {
+		$.post( 'api.php', $.param( params ), function ( data ) {
 			var str = new Date().toISOString() + ' ' + params.action + ' ';
 			if ( data.error !== undefined ) {
 				console.log( str + 'failed: ' + data.error );
@@ -26,7 +26,7 @@
 				console.log( str + 'succeeded: ' + ret );
 				callback( success, data[params.action] );
 			}
-		} );
+		}, 'json' );
 	};
 
 	/* PUBLIC METHODS */

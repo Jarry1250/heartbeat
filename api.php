@@ -8,7 +8,7 @@
  */
 
 $params = [];
-foreach( $_GET as $key => $value ) {
+foreach( $_REQUEST as $key => $value ) {
 	$params[$key] = preg_replace('/[^0-9a-z]/', '', $value);
 }
 
@@ -35,7 +35,7 @@ function requires() {
 	return implode( ', ', $missing ) . ' parameters must be present';
 }
 
-switch( $_GET['action'] ){
+switch( $params['action'] ){
 	case 'adjust':
 		$req = requires( 'id', 'date', 'target', 'value' );
 		if( $req !== true ) {
