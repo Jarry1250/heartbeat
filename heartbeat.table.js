@@ -6,7 +6,7 @@
  * @license MIT
  */
 (function($) {
-	var tableData = {}, id = false, $parent = false, monthShown = false, monthsLoaded = [];
+	var tableData = {}, id = false, $parent = false, monthShown = '', monthsLoaded = [];
 
 	/**
 	 * Sets a series of relevant global variables
@@ -118,7 +118,7 @@
 						if ( !$input.get( 0 ).validity.valid ) {
 							return;
 						}
-						var value = ( columnKey == 'gaps' )
+						var value = ( columnKey === 'gaps' )
 								? $.hoursToSeconds( $input.val() )
 								: $.toEpochSeconds( rowKey + ' ' + $input.val() );
 						doAdjust( $( this ), value, rowKey, columnKey );
@@ -154,7 +154,7 @@
 				var startDate = $.getPreviousMonday( $.toDate( monthShown + '01' ) ),
 					stopDate = $.getNextSunday( new Date() ),
 					rowKeys = [];
-				if ( monthShown != monthsLoaded[0] ) {
+				if ( monthShown !== monthsLoaded[0] ) {
 					// stopDate should be last date of month
 					stopDate = $.toDate( $.getNextMonth( monthShown ) + '01' );
 					stopDate.setDate( stopDate.getDate() - 1 );
@@ -243,12 +243,12 @@
 					case 'start':
 					case 'end':
 						var adj = rowData['adj_' + columnKeys[i]];
-						if( adj != 0 ) {
+						if( adj !== 0 ) {
 							$cell.text( $.secondsToHours( adj ) );
 							$cell.addClass( 'adjusted' );
 						}
 						$cell.append( getEditIcon( rowKeys[j], columnKeys[i] ) );
-						if( adj != 0 ) {
+						if( adj !== 0 ) {
 							$cell.append( getUndoIcon( rowKeys[j], columnKeys[i] ) );
 						}
 						break;
@@ -275,7 +275,7 @@
 			}
 
 			// Weekly totals
-			if( rowNames[j].substr( 0, 3 ) === 'Sun' ) {
+			if( j % 7 === 6 ) {
 				// Finalise previous row
 				$row.addClass( 'sunday' );
 

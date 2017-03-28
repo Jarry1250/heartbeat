@@ -49,7 +49,7 @@
 		var d = new Date( seconds * 1000 ),
 			hours = d.getHours(),
 			mins = d.getMinutes();
-		if( d.getYear() == 70 ) hours += ( ( d.getDate() - 1 ) * 24 );
+		if( d.getYear() === 70 ) hours += ( ( d.getDate() - 1 ) * 24 );
 		if ( hours < 10 ) hours = '0' + hours;
 		if ( mins < 10 ) mins = '0' + mins;
 		return hours + ':' + mins;
@@ -112,7 +112,7 @@
 	$.getPreviousMonday = function ( date ) {
 		date.setHours( 11 ); // Avoid auto-DST issues
 		var diff = date.getDate() - date.getDay() + 1;
-		if( date.getDay() == 0 ) diff -= 7;
+		if( date.getDay() === 0 ) diff -= 7;
 		return new Date( date.setDate( diff ) );
 	};
 

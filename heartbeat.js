@@ -20,7 +20,7 @@
 				console.log( str + 'failed: ' + data.error );
 				callback( failure, data.error );
 			} else {
-				var ret = ( params.action == 'query' || params.action == 'dashboard' )
+				var ret = ( params.action === 'query' || params.action === 'dashboard' )
 					? Object.keys( data[params.action] ).length + ' results found.'
 					: JSON.stringify( data[params.action] );
 				console.log( str + 'succeeded: ' + ret );
@@ -30,14 +30,6 @@
 	};
 
 	/* PUBLIC METHODS */
-	$.heartbeat = function( params, success, failure ) {
-		params.action = 'heartbeat';
-		api( params, success, failure );
-	};
-	$.query = function( params, success, failure ) {
-		params.action = 'query';
-		api( params, success, failure );
-	};
 	$.adjust = function ( params, success, failure ) {
 		params.action = 'adjust';
 		api( params, success, failure );
@@ -46,11 +38,19 @@
 		params.action = 'create';
 		api( params, success, failure );
 	};
+	$.dashboard = function ( success, failure ) {
+		api( { action: 'dashboard' }, success, failure );
+	};
+	$.heartbeat = function( params, success, failure ) {
+		params.action = 'heartbeat';
+		api( params, success, failure );
+	};
+	$.query = function( params, success, failure ) {
+		params.action = 'query';
+		api( params, success, failure );
+	};
 	$.validate = function ( params, success, failure ) {
 		params.action = 'validate';
 		api( params, success, failure );
-	};
-	$.dashboard = function ( success, failure ) {
-		api( { action: 'dashboard' }, success, failure );
 	};
 }(jQuery));
