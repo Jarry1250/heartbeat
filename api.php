@@ -63,7 +63,6 @@ switch( $_GET['action'] ){
 			$res['query'][$date] = $day;
 		}
 		ksort( $res['query'] );
-		$res['test'] = date( 'Ym2', strtotime( $params['month'] . '01 - 7 days' ) ) . '%';
 		break;
 	case 'heartbeat':
 		$req = requires( 'id' );
