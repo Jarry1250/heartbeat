@@ -130,6 +130,26 @@
 					doAdjust( $( this ), 0, rowKey, columnKey );
 				} )
 			},
+			getValidateIcon = function( rowKey, columnKey, currentState ) {
+				var classes = ['square-o unvalidated', 'check-square-o'];
+				return getIcon( classes[currentState] ).click( function () {
+					var $this = $( this ),
+						urlParams = {
+							'id': id,
+							'date': rowKey,
+							'value': ( 1 - currentState )
+						};
+					$this.removeClass( classes[currentState] ).addClass( 'fa-spin fa-circle-o-notch' );
+					$.validate( urlParams, function ( data ) {
+						tableData[data.date].validated = data.value;
+						$.updateTable();
+					}, function () {
+						$this.removeClass( 'fa-spin fa-circle-o-notch' )
+							.addClass( 'fa-exclamation-triangle' )
+							.css( 'color', 'red' );
+					} );
+				} );
+			},
 			getRowKeys = function() {
 				var startDate = $.getPreviousMonday( $.toDate( monthShown + '01' ) ),
 					stopDate = $.getNextSunday( new Date() ),
@@ -241,6 +261,7 @@
 
 						var diff = end - start - rowData['adj_gaps'];
 						$cell.text( $.secondsToHours( diff ) );
+						$cell.append( getValidateIcon( rowKeys[j], columnKeys[i], rowData['validated'] ) );
 						subtotal += diff;
 						break;
 

@@ -46,6 +46,10 @@
 		params.action = 'create';
 		api( params, success, failure );
 	};
+	$.validate = function ( params, success, failure ) {
+		params.action = 'validate';
+		api( params, success, failure );
+	};
 	$.dashboard = function ( success, failure ) {
 		api( { action: 'dashboard' }, success, failure );
 	};
