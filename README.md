@@ -9,6 +9,7 @@ Made available under the terms of the [MIT licence](https://spdx.org/licenses/MI
 ## Modules
 * heartbeat (JS, core)
 * heartbeat/api (PHP, core)
+* heartbeat/api/oauth (PHP, optional)
 * heartbeat/table (JS, optional but recommended)
 * heartbeat/timeanddate (JS, required by heartbeat/table)
 * heartbeat/oauth (JS, optional)
@@ -20,7 +21,7 @@ Made available under the terms of the [MIT licence](https://spdx.org/licenses/MI
 * js.cookie.js (optional but used in the multi user example below)
 
 ## Setup
-Clone all files into your chosen installation directory.
+Clone all files into your chosen installation directory. Note that heartbeat.settings.php contains customisable settings.
 
 ### Creating the database
 Using your IDE of choice, create a new SQLite database called heartbeat.db in the installation directory.
@@ -39,18 +40,23 @@ CREATE TABLE hours
     adj_gaps INTEGER DEFAULT 0,
     CONSTRAINT hours_id_date_key PRIMARY KEY (id, date)
 );
+CREATE TABLE users
+(
+    id TEXT PRIMARY KEY,
+    salt TEXT NOT NULL,
+    secret TEXT NOT NULL
+);
 ```
 
 ### Creating the frontend
 In index.html (or similar), add the dependencies listed above. Then, in a new code section make use of Heartbeat.
 
-#### Example (single user)
+#### Example (single user, $requireAuthentication = false)
 ```javascript
 $(function() {
-	var id = 1, init = function(){
+	var id = 1, secret = false, init = function(){
 			$.heartbeat( { 'id': id }, function( data ) {
 				// Success
-				$( '#status' ).text( 'active' );
 
 				// Show us our data now...
 				$.query( { 'id': id }, $.setTableData );
@@ -78,19 +84,22 @@ $(function() {
 			});
 		};
 		
+		$.initAPI( id, secret );
 		$.initTable( $( 'body' ), id );
-		// Update now...
 		
+		// Update now...
 		init();
 });
 ```
 #### Example (multi user, Google oAuth)
 ```javascript
 $(function() {
-	var id = Cookies.get( 'id' ),
+	var id = Cookies.get( 'heartbeat-id' ),
+		secret = Cookies.get( 'heartbeat-secret' ),
 		init = SAME AS FOR SINGLE USER;
 
 	if( id !== undefined ) {
+		$.initAPI( id, secret );
 		$.initTable( $( 'body' ), id );
 		// Update now...
 		init();
@@ -99,17 +108,15 @@ $(function() {
 
 	var clientId = YOUR_CLIENT_ID,
 		redirectUrl = document.location.href.replace( document.location.hash, '' );
-	$.initOauth( clientId, redirectUrl );
-	if( $.isRedirectUrl() ) {
-		$.verify( /^[a-zA-Z0-9.-]+@YOUR_DOMAIN$/, function( id ) {
-			Cookies.set( 'id', id, {expires: 365, path: ''} );
-			document.location.href = redirectUrl;
-		})
-	} else {
-		$( '#authorize-button' ).click( $.doRedirect );
-	}
+		$.initOauth( clientId, redirectUrl );
+		if( $.isRedirectUrl() ) {
+			$.verify( function( data ) {
+				Cookies.set( 'heartbeat-id', data.id, {expires: 365, path: '', domain: 'harryburt.co.uk'} );
+				Cookies.set( 'heartbeat-secret', data.secret, {expires: 365, path: '', domain: 'harryburt.co.uk' } );
+				document.location.href = redirectUrl;
+			} )
+		} else {
+			$( '#authorize-button' ).click( $.doRedirect );
+		}
 });
 ```
-	
-## Known issues
-* Lack of proper authentication: the database is 'leaky' and the data is far from tamper proof.
