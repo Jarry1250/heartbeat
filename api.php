@@ -142,7 +142,7 @@ switch( $params['action'] ){
 			$adjusted = ( $start === $datapoint['adj_start'] || $end === $datapoint['adj_end'] || $datapoint['adj_gaps'] > 0 );
 			if( !isset( $res['dashboard'][$datapoint['id']] ) ) $res['dashboard'][$datapoint['id']] = [];
 			if( !isset( $res['dashboard'][$datapoint['id']]['data'] ) ) $res['dashboard'][$datapoint['id']]['data'] = [];
-			$res['dashboard'][$datapoint['id']]['data'][$datapoint['date']] = array( $end - $start - $datapoint['adj_gaps'], $adjusted );
+			$res['dashboard'][$datapoint['id']]['data'][$datapoint['date']] = array( $end - $start - $datapoint['adj_gaps'], $adjusted, $datapoint['validated'] );
 		}
 		// Strip ids out to preserve anonymity and reduce bytecount
 		$res['dashboard'] = array_values( $res['dashboard'] );
