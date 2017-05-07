@@ -6,7 +6,12 @@
  * @license MIT
  */
 (function($) {
-	var clientId, redirectUrl, params = {};
+	var clientId, redirectUrl, params = {}, callback = function ( func, arguments ) {
+		if( typeof( func ) === "function" ) {
+			arguments = [arguments];
+			func.apply( null, arguments );
+		}
+	};
 
 	/**
 	 * Set a series of global variables, using both the supplied parameters and document.location
@@ -47,26 +52,19 @@
 
 	/**
 	 * Verify the supplied credentials
-	 * @param {RegExp} regex The regular express the user's email must match.
 	 * @param {function} success
+	 * @param {function} failure
 	 */
-	$.verify = function ( regex, success ) {
-		$.getJSON( 'https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=' + params.access_token, function ( data ) {
+	$.verify = function ( success, failure ) {
+		$.post( 'api.oauth.php', 'access_token=' + params.access_token, function ( data ) {
+			var str = new Date().toISOString() + ' oauth ';
 			if ( data.error !== undefined ) {
-				console.log( 'OAUTH ERROR: ' + data.error );
-				return;
-			} else if ( data.aud !== clientId ) {
-				console.log( 'OAUTH ERROR: invalid audience' );
-				return;
-			} else if ( data.email_verified !== 'true' ) {
-				console.log( 'OAUTH ERROR: email not verified' );
-				return;
-			} else if ( data.email.match( regex ) === null ) {
-				console.log( 'OAUTH ERROR: bad email' );
-				return;
+				console.log( str + 'failed: ' + data.error );
+				callback( failure, data.error );
+			} else {
+				console.log( str + 'succeeded: ' + JSON.stringify( data['oauth']['id'] ) );
+				callback( success, data['oauth'] );
 			}
-			console.log( 'Authenticated as ' + data.sub );
-			success( data.sub );
-		} );
+		}, 'json' );
 	};
 }(jQuery));
