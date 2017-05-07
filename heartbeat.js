@@ -27,30 +27,41 @@
 				callback( success, data[params.action] );
 			}
 		}, 'json' );
-	};
+	}, id, secret;
 
 	/* PUBLIC METHODS */
+	$.initAPI = function( newId, newSecret ) {
+		id = newId;
+		secret = newSecret;
+	};
 	$.adjust = function ( params, success, failure ) {
 		params.action = 'adjust';
+		params.id = id;
+		params.secret = secret;
 		api( params, success, failure );
 	};
 	$.create = function ( params, success, failure ) {
 		params.action = 'create';
+		params.id = id;
+		params.secret = secret;
 		api( params, success, failure );
 	};
 	$.dashboard = function ( success, failure ) {
-		api( { action: 'dashboard' }, success, failure );
+		api( { action: 'dashboard', id: id, secret: secret }, success, failure );
 	};
-	$.heartbeat = function( params, success, failure ) {
-		params.action = 'heartbeat';
-		api( params, success, failure );
+	$.heartbeat = function( success, failure ) {
+		api( { action: 'heartbeat', id: id, secret: secret }, success, failure );
 	};
 	$.query = function( params, success, failure ) {
 		params.action = 'query';
+		params.id = id;
+		params.secret = secret;
 		api( params, success, failure );
 	};
 	$.validate = function ( params, success, failure ) {
 		params.action = 'validate';
+		params.id = id;
+		params.secret = secret;
 		api( params, success, failure );
 	};
 }(jQuery));

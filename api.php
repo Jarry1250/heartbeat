@@ -7,13 +7,16 @@
  * @license MIT
  */
 
-$params = [];
-foreach( $_REQUEST as $key => $value ) {
-	$params[$key] = preg_replace('/[^0-9a-z]/', '', $value);
+require_once( 'heartbeat.settings.php' );
+
+$params = $_POST + $_GET;
+foreach( $params as $key => &$value ) {
+	$value = preg_replace( '/[^0-9a-zA-Z_.-]/', '', $value );
 }
 
 $res = [];
 $db = new SQLite3( 'heartbeat.db' );
+header( 'Content-Type: application/json' );
 
 /**
  * Guarantees that a list of parameters are set in the global $params array
@@ -35,9 +38,32 @@ function requires() {
 	return implode( ', ', $missing ) . ' parameters must be present';
 }
 
+// Authenticate all actions
+$p   = $requireAuthentication ? array( 'id', 'secret' ) : array( 'id' );
+$req = requires( $p );
+if( $req === true ) {
+	if( !preg_match( '/^[0-9]+$/', $params['id'] ) ) {
+		$res['error'] = "'id' parameter must be numeric";
+	} elseif ( $requireAuthentication ) {
+		$user = $db->querySingle( "SELECT salt, secret FROM users WHERE id = '{$params['id']}';", true );
+		$encrypedSecret = hash( 'sha256', $user['salt'] . $params['secret'] );
+		if( !hash_equals( $user['secret'], $encrypedSecret ) ) {
+			$res['error'] = 'authentication failed, forcing re-login';
+			setcookie( 'heartbeat-id', '', time() - 3600, '',  'harryburt.co.uk' );
+		}
+	}
+} else {
+	$res['error'] = $req;
+}
+
+if( isset( $res['error'] ) ) {
+	// Output
+	die( json_encode( $res ) );
+}
+
 switch( $params['action'] ){
 	case 'adjust':
-		$req = requires( 'id', 'date', 'target', 'value' );
+		$req = requires( 'date', 'target', 'value' );
 		if( $req !== true ) {
 			$res['error'] = $req;
 			break;
@@ -46,7 +72,6 @@ switch( $params['action'] ){
 		// Of course, the below doesn't catch all non-existent dates, but rather catches malformed
 		// dates and assorted injection attempts
 		$validationErrors = [];
-		if( preg_match( '/[^0-9]/', $params['id'] ) ) $validationErrors[] = "'id' parameter must be numeric";
 		if( !preg_match( '/^20[12][0-9](0[1-9]|1[0-2])([0-2][0-9]|3[01])$/', $params['date'] ) ) $validationErrors[] = "'date' must be in the YYYYmmdddd format";
 		if( !in_array( $params['target'], ['start', 'end', 'gaps'] ) )	$validationErrors[] = "'target' must be one of 'start', 'end' and 'gaps'";
 		if( $params['target'] == 'gaps' ) {
@@ -80,16 +105,13 @@ switch( $params['action'] ){
 		break;
 
 	case 'create':
-		$req = requires( 'id', 'date' );
+		$req = requires( 'date' );
 		if( $req !== true ) {
 			$res['error'] = $req;
 			break;
 		}
-		$validationErrors = [];
-		if( preg_match( '/[^0-9]/', $params['id'] ) ) $validationErrors[] = "'id' parameter must be numeric";
-		if( !preg_match( '/^20[12][0-9](0[1-9]|1[0-2])([0-2][0-9]|3[01])$/', $params['date'] ) ) $validationErrors[] = "'date' must be in the YYYYmmdddd format";
-		if( count( $validationErrors ) > 0 ) {
-			$res['error'] = implode( ' AND ', $validationErrors );
+		if( !preg_match( '/^20[12][0-9](0[1-9]|1[0-2])([0-2][0-9]|3[01])$/', $params['date'] ) ) {
+			$res['error'] = "'date' must be in the YYYYmmdddd format";
 			break;
 		}
 
@@ -127,15 +149,8 @@ switch( $params['action'] ){
 		break;
 
 	case 'heartbeat':
-		$req = requires( 'id' );
-		if( $req !== true ) {
-			$res['error'] = $req;
-			break;
-		}
-		if( preg_match( '/[^0-9]/', $params['id'] ) ) {
-			$res['error'] = "'id' parameter must be numeric";
-			break;
-		}
+		// No further authentication required
+
 		// First, let's assume we already have an (id, date) pair and try to update that row
 		// 99% of the time we will have
 		$end = time();
@@ -173,15 +188,6 @@ switch( $params['action'] ){
 		break;
 
 	case 'query':
-		$req = requires( 'id' );
-		if( $req !== true ) {
-			$res['error'] = $req;
-			break;
-		}
-		if( preg_match( '/[^0-9]/', $params['id'] ) ) {
-			$res['error'] = "'id' parameter must be numeric";
-			break;
-		}
 		if( !isset( $params['month'] ) ) $params['month'] = date( 'Ym' );
 		if( !preg_match( '/^20[12][0-9](0[1-9]|1[0-2])$/', $params['month'] ) ) {
 			$res['error'] = "'month' must fit the format YYYYmm";
@@ -202,13 +208,12 @@ switch( $params['action'] ){
 		break;
 
 	case 'validate':
-		$req = requires( 'id', 'date', 'value' );
+		$req = requires( 'date', 'value' );
 		if( $req !== true ) {
 			$res['error'] = $req;
 			break;
 		}
 		$validationErrors = [];
-		if( preg_match( '/[^0-9]/', $params['id'] ) ) $validationErrors[] = "'id' parameter must be numeric";
 		if( !preg_match( '/^20[12][0-9](0[1-9]|1[0-2])([0-2][0-9]|3[01])$/', $params['date'] ) ) $validationErrors[] = "'date' must be in the YYYYmmdddd format";
 		if( $params['value'] !== '0' && $params['value'] !== '1' ) $validationErrors[] = "'value' must be 0 or 1";
 		if( count( $validationErrors ) > 0 ) {
@@ -237,5 +242,4 @@ switch( $params['action'] ){
 }
 
 // Output
-header('Content-Type: application/json');
 echo json_encode( $res );

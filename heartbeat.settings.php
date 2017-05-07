@@ -7,6 +7,9 @@
 	 * @license MIT
 	 */
 
+	/* api.php */
+	$requireAuthentication = true;
+
 	/* api.oauth.php */
 	$clientId = 'myapp.apps.googleusercontent.com';
 	$emailRegex = '/^[a-z0-9.-]+@[a-z-.]+$/i';
