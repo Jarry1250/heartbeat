@@ -193,10 +193,12 @@ switch( $params['action'] ){
 			$res['error'] = "'month' must fit the format YYYYmm";
 			break;
 		}
-		$selectStatement = $db->prepare( 'SELECT * FROM hours WHERE id = :id AND ( date LIKE :month OR date LIKE :weekBuffer )' );
+		$previousMonth = date( 'Ym', strtotime( $params['month'] . '01 - 7 days' ) );
+		$selectStatement = $db->prepare( 'SELECT * FROM hours WHERE id = :id AND ( date LIKE :month OR date LIKE :weekBuffer OR date LIKE :weekBuffer2 )' );
 		$selectStatement->bindValue( ':id', $params['id'], SQLITE3_TEXT );
 		$selectStatement->bindValue( ':month', $params['month'] . '__', SQLITE3_TEXT );
-		$selectStatement->bindValue( ':weekBuffer', date( 'Ym2', strtotime( $params['month'] . '01 - 7 days' ) ) . '_', SQLITE3_TEXT );
+		$selectStatement->bindValue( ':weekBuffer', $previousMonth . '2_', SQLITE3_TEXT );
+		$selectStatement->bindValue( ':weekBuffer2', $previousMonth . '3_', SQLITE3_TEXT );
 		$selectRes = $selectStatement->execute();
 		$res['query'] = [];
 		while( $day = $selectRes->fetchArray( SQLITE3_ASSOC ) ){
