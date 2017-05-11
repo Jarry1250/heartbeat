@@ -67,7 +67,7 @@
 				};
 				$this.removeClass().addClass( 'fa fa-spin fa-circle-o-notch' );
 				$.adjust( urlParams, function ( data ) {
-					tableData[data.date]['adj_' + columnKey] = data.value;
+					tableData[data.date]['adj_' + columnKey] = parseInt( data.value );
 					$.updateTable();
 				}, function () {
 					$this.removeClass( 'fa-spin fa-circle-o-notch' )
@@ -141,7 +141,7 @@
 						};
 					$this.removeClass( classes[currentState] ).addClass( 'fa-spin fa-circle-o-notch' );
 					$.validate( urlParams, function ( data ) {
-						tableData[data.date].validated = data.value;
+						tableData[data.date].validated = parseInt( data.value );
 						$.updateTable();
 					}, function () {
 						$this.removeClass( 'fa-spin fa-circle-o-notch' )
