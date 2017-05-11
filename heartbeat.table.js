@@ -103,7 +103,7 @@
 					var $cell = $( this ).parent(),
 						$input = $( '<input type="text"/>' )
 							.val( $cell.text() )
-							.attr( 'pattern', '([01]?[0-9]|2[0123]):[0-5][0-9]' )
+							.attr( 'pattern', '([01]?[0-9]|2[0123])(:|\.)[0-5][0-9]' )
 							.keyup( function ( e ) {
 								if ( e.which !== 13 ) return;  // the enter key code
 								$cell.find( 'i.fa-check' ).click();
@@ -118,6 +118,7 @@
 						if ( !$input.get( 0 ).validity.valid ) {
 							return;
 						}
+						$input.val( $input.val().replace( '.', ':' ) );
 						var value = ( columnKey === 'gaps' )
 								? $.hoursToSeconds( $input.val() )
 								: $.toEpochSeconds( rowKey + ' ' + $input.val() );
