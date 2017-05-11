@@ -39,8 +39,7 @@ function requires() {
 }
 
 // Authenticate all actions
-$p   = $requireAuthentication ? array( 'id', 'secret' ) : array( 'id' );
-$req = requires( $p );
+$req =  $requireAuthentication ? requires( 'id', 'secret' ) : requires( 'id' );
 if( $req === true ) {
 	if( !preg_match( '/^[0-9]+$/', $params['id'] ) ) {
 		$res['error'] = "'id' parameter must be numeric";
