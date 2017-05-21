@@ -88,7 +88,7 @@
 					$this.removeClass( 'fa-undo' ).addClass( 'fa-spin fa-circle-o-notch' );
 					$.create( urlParams, function ( data ) {
 						var newRow = {};
-						newRow.start = newRow.end = newRow.adj_start = newRow.adj_end = newRow.adj_gaps = newRow.counter = 0;
+						newRow.start = newRow.end = newRow.adj_start = newRow.adj_end = newRow.adj_gaps = newRow.counter = newRow.validated = 0;
 						tableData[data.date] = newRow;
 						$.updateTable();
 					}, function () {
