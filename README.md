@@ -1,5 +1,9 @@
 # heartbeat
-A simple, semi-automated working hours tracker with multiuser support
+Heartbeat is a simple, semi-automated working hours tracker -- with multiuser support -- designed to address the basic
+ problem with other simple time recording tools: that no-one can be bothered to fill them in properly, and when they do,
+ they often misjudge their own hours.
+
+It works by fixing the earliest time you log on, and the latest time you log off. You can manually correct any entry.
 
 ## Licence
 Copyright (c) 2017 Harry Burt <http://www.harryburt.co.uk>.
@@ -96,7 +100,7 @@ $(function() {
 $(function() {
 	var id = Cookies.get( 'heartbeat-id' ),
 		secret = Cookies.get( 'heartbeat-secret' ),
-		init = SAME AS FOR SINGLE USER;
+		init =  function () { /* SAME AS FOR SINGLE USER */ };
 
 	if( id !== undefined ) {
 		$.initAPI( id, secret );
